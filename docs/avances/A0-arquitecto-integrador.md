@@ -31,12 +31,15 @@ Leyenda: ⬜ pendiente · 🔄 en curso · ✅ hecha · ⛔ bloqueada
 |---|---|---|---|
 | 2026-10-30 | F0 | Blueprint inicial del backend, roles y roadmap | 22c8f8c |
 | 2026-10-30 | F1 | Contratos v1 y docs/contratos.md para el frontend | F1-backend |
+| 2026-10-30 | F1 | Tarea 02 para A4: mapa base autoalojado (CARTO exige clave), login y estructura del frontend | A4-tarea-02 |
 
 ## Solicitudes a otros agentes
 
 | Para | Qué necesito | Por qué | Estado |
 |---|---|---|---|
 | A4 | Usar solo tipos de `@geoalert/contracts` y seguir docs/contratos.md | Evitar desalineación front/back | abierta |
+| A4 | Ejecutar `A4-tarea-02-mapa-base-y-estructura.md` | El mapa sale con marca de agua de CARTO y el login está vacío | abierta |
+| Jhar | Confirmar si las reglas del hackathon limitan el uso de APIs externas | Decide si OpenFreeMap/OSM pueden usarse como respaldo en la demo | abierta |
 
 ## Solicitudes recibidas
 

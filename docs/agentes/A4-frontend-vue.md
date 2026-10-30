@@ -1,5 +1,8 @@
 # A4 · Frontend Vue 3
 
+> **Tareas asignadas pendientes**: [Tarea 02 · Mapa base sin claves, registro y estructura](A4-tarea-02-mapa-base-y-estructura.md) (prioridad alta).
+> **Stack del mapa**: el mapa base es autoalojado (PMTiles de Piura); CARTO queda descartado.
+
 ## Misión
 La SPA que usan vecinos, brigadistas y Defensa Civil: mapa en vivo estilo Waze, reporte con foto WebP,
 confirmación con un toque y panel de despacho.
