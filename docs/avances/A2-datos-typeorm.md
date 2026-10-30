@@ -40,7 +40,7 @@ Leyenda: ⬜ pendiente · 🔄 en curso · ✅ hecha · ⛔ bloqueada
 | Fecha | Fase | Qué se hizo | Commit |
 |---|---|---|---|
 | 2026-10-30 | F1 | TypeORM + PostGIS completo, seeds, importación y Prisma eliminado | F1-backend |
-| 2026-10-30 | F1 | Respuesta a la propuesta de esquema de Kiro (M1–M6) | este commit |
+| 2026-10-30 | F1 | Propuesta de esquema de Kiro cancelada por Jhar; respuesta retirada | este commit |
 
 ## Solicitudes a otros agentes
 
@@ -52,7 +52,7 @@ Leyenda: ⬜ pendiente · 🔄 en curso · ✅ hecha · ⛔ bloqueada
 
 | De | Qué piden | Estado |
 |---|---|---|
-| Kiro | 6 mejoras de esquema ([propuesta](../propuestas/PROPUESTA-Kiro-a-A2-mejoras-schema-db.md)) | respondida en [RESPUESTA-A2-a-Kiro](../propuestas/RESPUESTA-A2-a-Kiro-mejoras-schema-db.md): F1 `sessions`, F2 UNIQUE `(incident_id, sha256)` y `districts` por ubigeo, F3 `risk_zones`, F4 particionado `audit_logs` |
+| Kiro | 6 mejoras de esquema | **cancelada por Jhar** (2026-10-30). Sin cambios de esquema. La tabla de sesiones sigue en el backlog propio (A1-F1-06) |
 
 ## Decisiones y notas técnicas
 
