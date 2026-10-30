@@ -2,6 +2,8 @@
 
 > **Para**: Antigravity (A4 · Frontend Vue 3)
 > **De**: A0 (Claude), a pedido de Jhar · 2026-10-30
+> **⚠ Actualizada por la [tarea 03](A4-tarea-03-componentes-mapa-local-y-riesgo.md)**: no se permiten servicios
+> externos, así que `osm` y `openfreemap` ya no son opciones válidas. El resto de esta tarea sigue vigente.
 > **Prioridad**: alta (bloquea la demo) · **Rama**: `dev`
 > Sustituye a `docs/propuestas/PROPUESTA-Coordinador-a-A4-mapa-base-y-estructura-frontend.md` (borrador local, no subido).
 > Al empezar, añade esta tarea a *Solicitudes recibidas* de tu avance y márcala al terminar.

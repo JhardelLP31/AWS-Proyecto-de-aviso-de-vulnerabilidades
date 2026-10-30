@@ -1,7 +1,11 @@
 # A4 · Frontend Vue 3
 
-> **Tareas asignadas pendientes**: [Tarea 02 · Mapa base sin claves, registro y estructura](A4-tarea-02-mapa-base-y-estructura.md) (prioridad alta).
-> **Stack del mapa**: el mapa base es autoalojado (PMTiles de Piura); CARTO queda descartado.
+> **Tareas asignadas pendientes** (en orden):
+> 1. [Tarea 02 · Mapa base sin claves, registro y estructura](A4-tarea-02-mapa-base-y-estructura.md)
+> 2. [Tarea 03 · Componentes, mapa 100 % local y riesgo histórico](A4-tarea-03-componentes-mapa-local-y-riesgo.md)
+>
+> **Regla**: la app no consume servicios externos en tiempo de ejecución (mapas, fuentes, CDNs). El mapa base es el
+> PMTiles de Piura versionado en el repo; OSM, OpenFreeMap y CARTO quedan descartados.
 
 ## Misión
 La SPA que usan vecinos, brigadistas y Defensa Civil: mapa en vivo estilo Waze, reporte con foto WebP,
