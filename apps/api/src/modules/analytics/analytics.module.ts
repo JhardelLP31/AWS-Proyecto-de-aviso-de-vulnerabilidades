@@ -1,7 +1,7 @@
 import { Controller, Get, Module, Query } from '@nestjs/common';
 import { LazyModuleLoader } from '@nestjs/core';
 import { PERMISSIONS } from '@geoalert/contracts';
-import { RequirePermissions } from '../rbac/presentation/rbac.decorators';
+import { RequirePermissions } from '../../common/decorators';
 
 /**
  * Carga perezosa: el motor de analítica (agregaciones, heatmaps) no se importa en el

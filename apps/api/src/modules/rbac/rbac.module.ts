@@ -1,20 +1,22 @@
 import { Global, Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
+import { DataSource } from 'typeorm';
+import { PermissionsGuard } from '../../common/guards/permissions.guard';
 import { env } from '../../config/env';
-import { AccessResolver } from './application/access-resolver.service';
-import { IDENTITY_STORE } from './domain/identity';
-import { PermissionsGuard } from './presentation/permissions.guard';
+import { StaticIdentityStore } from './repositories/static-identity.store';
+import { TypeOrmIdentityStore } from './repositories/typeorm-identity.store';
+import { AccessResolver } from './services/access-resolver.service';
+import { IDENTITY_STORE, IIdentityStore } from './types/identity.types';
 
 @Global()
 @Module({
   providers: [
     {
       provide: IDENTITY_STORE,
-      // import() dinámico: en modo mock nunca se carga Prisma.
-      useFactory: async () =>
-        env.incidentsDriver === 'postgres'
-          ? new (await import('./infrastructure/prisma-identity.store')).PrismaIdentityStore()
-          : new (await import('./infrastructure/static-identity.store')).StaticIdentityStore(),
+      // DataSource solo existe con DATA_DRIVER=postgres (DatabaseModule); en mock se inyecta undefined.
+      inject: [{ token: DataSource, optional: true }],
+      useFactory: (db?: DataSource): IIdentityStore =>
+        env.dataDriver === 'postgres' && db ? new TypeOrmIdentityStore(db) : new StaticIdentityStore(),
     },
     AccessResolver,
     { provide: APP_GUARD, useClass: PermissionsGuard },

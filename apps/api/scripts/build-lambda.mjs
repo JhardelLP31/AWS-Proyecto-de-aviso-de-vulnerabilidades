@@ -1,6 +1,7 @@
 // Empaqueta la API en un único archivo tree-shaken para AWS Lambda (Node 22).
 // Paso 1 (`tsc`): compila con emitDecoratorMetadata, que Nest necesita y esbuild no genera.
 // Paso 2 (este script): esbuild empaqueta el JS compilado y elimina código muerto.
+import { copyFile, mkdir } from 'node:fs/promises';
 import { build } from 'esbuild';
 
 await build({
@@ -21,11 +22,30 @@ await build({
     '@nestjs/platform-socket.io', // en Lambda no hay servidor WebSocket (REALTIME_DRIVER=redis)
     '@fastify/static',
     'class-transformer/storage',
-    // Prisma trae su motor nativo: se publica como Lambda Layer (node_modules/.prisma + @prisma/client).
-    '@prisma/client',
-    '.prisma/client',
+    // Drivers opcionales de TypeORM que no usamos (solo PostgreSQL vía `pg`).
+    'mysql',
+    'mysql2',
+    'sqlite3',
+    'better-sqlite3',
+    'sql.js',
+    'oracledb',
+    'mssql',
+    'mongodb',
+    'hdb-pool',
+    '@sap/hana-client',
+    '@sap/hana-client/extension/Stream',
+    'typeorm-aurora-data-api-driver',
+    'react-native-sqlite-storage',
+    '@google-cloud/spanner',
+    'pg-native',
+    'pg-query-stream',
+    'redis',
     // El runtime de Lambda ya incluye AWS SDK v3.
     '@aws-sdk/*',
   ],
   logLevel: 'info',
 });
+
+// Datos guía de riesgo histórico: viajan con el bundle (RISK_DATASET_PATH=./data/indeci_historico_piura.json en Lambda).
+await mkdir('dist/lambda/data', { recursive: true });
+await copyFile('../../data/indeci_historico_piura.json', 'dist/lambda/data/indeci_historico_piura.json');

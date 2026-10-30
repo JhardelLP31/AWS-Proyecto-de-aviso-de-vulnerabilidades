@@ -1,33 +1,33 @@
 import { Module } from '@nestjs/common';
+import { DataSource } from 'typeorm';
 import { env } from '../../config/env';
-import { getPrisma } from '../../shared/prisma/prisma.provider';
 import { NotificationsWsModule } from '../notifications-ws/notifications-ws.module';
-import { IncidentService } from './application/incident.service';
-import { INCIDENT_REPOSITORY, IIncidentRepository, PHOTO_STORAGE } from './domain/ports';
+import { LocalPhotoStorage, S3PhotoStorage } from './adapters/photo-storage';
+import { IncidentsController } from './controllers/incidents.controller';
+import { PHOTO_STORAGE } from './domain/ports';
 import { DEFAULT_VERACITY_POLICY, VERACITY_POLICY } from './domain/veracity';
-import { LocalPhotoStorage, S3PhotoStorage } from './infrastructure/photo-storage';
-import { IncidentsController } from './presentation/incidents.controller';
+import { IIncidentRepository, INCIDENT_REPOSITORY } from './repositories/incident.repository';
+import { MockIncidentRepository } from './repositories/mock-incident.repository';
+import { TypeOrmIncidentRepository } from './repositories/typeorm-incident.repository';
+import { IncidentsService } from './services/incidents.service';
 
 /**
- * Inversión de dependencias: IncidentService solo conoce IIncidentRepository.
- * INCIDENTS_DRIVER=mock     → LocalMockIncidentRepository (5 000 registros INDECI en memoria)
- * INCIDENTS_DRIVER=postgres → PostgresIncidentRepository (Prisma + PostGIS)
+ * Inversión de dependencias: IncidentsService solo conoce IIncidentRepository.
+ *   DATA_DRIVER=mock     → MockIncidentRepository (5 000 registros INDECI en memoria)
+ *   DATA_DRIVER=postgres → TypeOrmIncidentRepository (PostgreSQL + PostGIS)
  */
 @Module({
   imports: [NotificationsWsModule],
   controllers: [IncidentsController],
   providers: [
-    IncidentService,
+    IncidentsService,
     {
       provide: INCIDENT_REPOSITORY,
-      useFactory: async (): Promise<IIncidentRepository> => {
-        if (env.incidentsDriver === 'postgres') {
-          const { PostgresIncidentRepository } = await import('./infrastructure/postgres-incident.repository');
-          return new PostgresIncidentRepository(await getPrisma());
-        }
-        const { LocalMockIncidentRepository } = await import('./infrastructure/local-mock-incident.repository');
-        return LocalMockIncidentRepository.load(env.mockDatasetPath);
-      },
+      inject: [{ token: DataSource, optional: true }],
+      useFactory: async (db?: DataSource): Promise<IIncidentRepository> =>
+        env.dataDriver === 'postgres' && db
+          ? new TypeOrmIncidentRepository(db)
+          : MockIncidentRepository.load(env.mockDatasetPath),
     },
     {
       provide: PHOTO_STORAGE,

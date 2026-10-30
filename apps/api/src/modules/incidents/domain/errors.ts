@@ -1,4 +1,4 @@
-import { DomainError } from '../../../shared/domain-error';
+import { DomainError } from '../../../common/errors/domain-error';
 
 export class IncidentNotFound extends DomainError {
   readonly code = 'INCIDENT_NOT_FOUND';

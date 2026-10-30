@@ -1,5 +1,5 @@
 import type { IncidentStatus } from '@geoalert/contracts';
-import type { Incident, Vote } from './incident';
+import type { Incident, Vote } from '../types/incident.types';
 
 /**
  * Motor de confianza (Crowd-Verification).

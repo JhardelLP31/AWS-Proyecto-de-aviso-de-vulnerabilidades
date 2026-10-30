@@ -6,6 +6,7 @@ import { createAdapter } from '@socket.io/redis-adapter';
 import { Redis } from 'ioredis';
 import type { ServerOptions } from 'socket.io';
 import { env } from './config/env';
+import { DatabaseModule } from './database/database.module';
 import { AuditModule } from './modules/audit/audit.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { RealtimeGatewayModule } from './modules/notifications-ws/notifications-ws.module';
@@ -32,7 +33,9 @@ class RedisIoAdapter extends IoAdapter {
   }
 }
 
-@Module({ imports: [AuditModule, AuthModule, RbacModule, RealtimeGatewayModule] })
+@Module({
+  imports: [...(env.dataDriver === 'postgres' ? [DatabaseModule] : []), AuditModule, AuthModule, RbacModule, RealtimeGatewayModule],
+})
 class RealtimeAppModule {}
 
 async function bootstrap(): Promise<void> {

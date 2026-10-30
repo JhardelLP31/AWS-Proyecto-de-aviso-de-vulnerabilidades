@@ -9,7 +9,7 @@ Una fase se cierra cuando A0 marca su *checklist de cierre* y A5 promueve `dev` 
 | Fase | Estado | Rama donde vive |
 |---|---|---|
 | F0 · Blueprint y equipo | ✅ cerrada | `dev`, `stg`, `prod` |
-| F1 · Auth, RBAC y datos mock | 🔜 siguiente | `dev` |
+| F1 · Auth, RBAC y datos mock | 🟡 backend listo; falta frontend (Antigravity) | `dev` |
 | F2 · Pipeline de imágenes e incidentes | ⏳ | — |
 | F3 · WebSockets y confirmaciones | ⏳ | — |
 | F4 · Despliegue serverless e insignias | ⏳ | — |
@@ -19,7 +19,10 @@ Una fase se cierra cuando A0 marca su *checklist de cierre* y A5 promueve `dev` 
 Ya existe en `apps/api` un backend NestJS que compila y pasa pruebas en modo mock:
 auth con cookie HttpOnly + CSRF, RBAC con `@RequirePermissions` y `PermissionsGuard`, `AuditInterceptor`,
 servicio de incidentes con motor de veracidad y geocerca, gateway Socket.io por celdas geohash,
-`lambda.ts`, 5 000 registros INDECI sintéticos. Usa **Prisma**: en F1 se migra a **TypeORM**.
+`lambda.ts`, 5 000 registros INDECI sintéticos.
+
+En F1 el backend pasó a **TypeORM + PostGIS** (Prisma eliminado), con módulos tipo *resource*, capa `common/`,
+registro de usuarios, 31 pruebas unitarias, 15 pruebas e2e contra Postgres real y CI en GitHub Actions.
 
 ## F1 · Auth, RBAC y datos mock
 

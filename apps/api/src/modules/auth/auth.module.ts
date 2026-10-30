@@ -1,9 +1,9 @@
-import { Global, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { env } from '../../config/env';
-import { SessionService } from './application/session.service';
-import { CsrfMiddleware } from './infrastructure/csrf.middleware';
-import { AuthController } from './presentation/auth.controller';
+import { AuthController } from './controllers/auth.controller';
+import { AuthService } from './services/auth.service';
+import { SessionService } from './services/session.service';
 
 @Global()
 @Module({
@@ -15,11 +15,7 @@ import { AuthController } from './presentation/auth.controller';
     }),
   ],
   controllers: [AuthController],
-  providers: [SessionService],
+  providers: [AuthService, SessionService],
   exports: [SessionService],
 })
-export class AuthModule implements NestModule {
-  configure(consumer: MiddlewareConsumer): void {
-    consumer.apply(CsrfMiddleware).forRoutes('*');
-  }
-}
+export class AuthModule {}
