@@ -136,8 +136,9 @@ export async function request<T>(endpoint: string, options: RequestOptions = {})
       body: bodyContent,
       credentials: 'include', // Imprescindible para cookies HttpOnly
     });
-  } catch (err: any) {
-    throw new ApiError(0, err.message || 'Error de conexión de red');
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : 'Error de conexión de red';
+    throw new ApiError(0, msg);
   }
 
   // Si la respuesta fue exitosa
@@ -178,7 +179,8 @@ export async function request<T>(endpoint: string, options: RequestOptions = {})
 }
 
 export const http = {
-  get: <T>(url: string, params?: Record<string, any>) => request<T>(url, { method: 'GET', params }),
+  get: <T>(url: string, params?: Record<string, string | number | boolean | undefined | null>) =>
+    request<T>(url, { method: 'GET', params }),
   post: <T>(url: string, body?: unknown) => request<T>(url, { method: 'POST', body }),
   put: <T>(url: string, body?: unknown) => request<T>(url, { method: 'PUT', body }),
   patch: <T>(url: string, body?: unknown) => request<T>(url, { method: 'PATCH', body }),

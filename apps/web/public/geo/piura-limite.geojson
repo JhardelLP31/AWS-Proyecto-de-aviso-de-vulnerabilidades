@@ -1,0 +1,27 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Departamento de Piura",
+        "description": "Límite departamental de Piura (Zona de Cobertura FEN)"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-81.45, -4.05],
+            [-80.25, -4.05],
+            [-79.10, -4.85],
+            [-79.10, -5.85],
+            [-80.10, -6.40],
+            [-80.95, -6.40],
+            [-81.45, -5.50],
+            [-81.45, -4.05]
+          ]
+        ]
+      }
+    }
+  ]
+}

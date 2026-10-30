@@ -44,8 +44,36 @@ export const useAuthStore = defineStore('auth', () => {
         setCsrfToken(response.csrfToken);
       }
       return response.user;
-    } catch (err: any) {
-      error.value = err.message || 'Error al iniciar sesión';
+    } catch (err: unknown) {
+      error.value = err instanceof Error ? err.message : 'Error al iniciar sesión';
+      throw err;
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  /**
+   * Registra un nuevo usuario comunitario vía POST /api/auth/register.
+   */
+  async function register(payload: {
+    email: string;
+    password: string;
+    displayName: string;
+    district?: string;
+    phone?: string;
+  }): Promise<MeDTO> {
+    isLoading.value = true;
+    error.value = null;
+
+    try {
+      const response = await http.post<{ user: MeDTO; csrfToken: string }>('/api/auth/register', payload);
+      user.value = response.user;
+      if (response.csrfToken) {
+        setCsrfToken(response.csrfToken);
+      }
+      return response.user;
+    } catch (err: unknown) {
+      error.value = err instanceof Error ? err.message : 'Error al registrarse';
       throw err;
     } finally {
       isLoading.value = false;
@@ -107,6 +135,7 @@ export const useAuthStore = defineStore('auth', () => {
     isBrigade,
     isAuthority,
     login,
+    register,
     logout,
     fetchMe,
   };

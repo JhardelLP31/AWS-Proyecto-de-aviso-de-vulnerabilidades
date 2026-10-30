@@ -30,6 +30,15 @@ const routes: RouteRecordRaw[] = [
     },
   },
   {
+    path: '/register',
+    name: 'register',
+    component: () => import('../features/auth/RegisterView.vue'),
+    meta: {
+      guestOnly: true,
+      title: 'Registro Comunitario — GeoAlert',
+    },
+  },
+  {
     path: '/report',
     name: 'report',
     component: () => import('../features/report/ReportIncidentView.vue'),
@@ -47,6 +56,16 @@ const routes: RouteRecordRaw[] = [
       requiresAuth: true,
       permissions: [PERMISSIONS.AlertsReceive],
       title: 'Centro de Despacho COER — GeoAlert',
+    },
+  },
+  {
+    path: '/riesgo',
+    name: 'risk',
+    component: () => import('../features/risk/RiskForecastView.vue'),
+    meta: {
+      requiresAuth: true,
+      permissions: [PERMISSIONS.AnalyticsRead],
+      title: 'Pronóstico y Riesgo Histórico — GeoAlert',
     },
   },
   {

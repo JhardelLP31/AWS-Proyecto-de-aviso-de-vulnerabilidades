@@ -5,30 +5,17 @@
     </div>
 
     <div class="legend-items">
-      <div class="legend-item">
-        <span class="color-dot dot-red"></span>
-        <span class="legend-label">Crítico (Dique / Desborde)</span>
-      </div>
-
-      <div class="legend-item">
-        <span class="color-dot dot-orange"></span>
-        <span class="legend-label">Grave (Cuenca colapsada)</span>
-      </div>
-
-      <div class="legend-item">
-        <span class="color-dot dot-yellow"></span>
-        <span class="legend-label">Moderado (Encharcamiento)</span>
-      </div>
-
-      <div class="legend-item">
-        <span class="color-dot dot-green"></span>
-        <span class="legend-label">Normal / Controlado</span>
+      <div v-for="(config, sev) in SEVERITY_CONFIGS" :key="sev" class="legend-item">
+        <span class="color-dot" :style="{ backgroundColor: config.color, boxShadow: `0 0 6px ${config.glowColor}` }"></span>
+        <span class="legend-label">{{ config.label }}</span>
       </div>
     </div>
   </div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { SEVERITY_CONFIGS } from '../../shared/map/severity-style';
+</script>
 
 <style scoped>
 .legend-panel {
@@ -37,7 +24,7 @@
   right: 1rem;
   z-index: 500;
   padding: 0.75rem 0.9rem;
-  max-width: 230px;
+  max-width: 250px;
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-sm);
   pointer-events: auto;
@@ -74,28 +61,8 @@
   flex-shrink: 0;
 }
 
-.dot-red {
-  background-color: var(--sev-red);
-  box-shadow: 0 0 6px var(--sev-red-glow);
-}
-
-.dot-orange {
-  background-color: var(--sev-orange);
-  box-shadow: 0 0 6px var(--sev-orange-glow);
-}
-
-.dot-yellow {
-  background-color: var(--sev-yellow);
-  box-shadow: 0 0 6px var(--sev-yellow-glow);
-}
-
-.dot-green {
-  background-color: var(--sev-green);
-  box-shadow: 0 0 6px var(--sev-green-glow);
-}
-
 .legend-label {
-  font-size: 0.75rem;
+  font-size: 0.725rem;
   color: var(--text-main);
   white-space: nowrap;
 }

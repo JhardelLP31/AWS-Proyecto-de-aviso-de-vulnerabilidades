@@ -98,8 +98,8 @@ export function useCameraWebp() {
         height: currentHeight,
         format: targetMime,
       };
-    } catch (err: any) {
-      error.value = err.message || 'Error procesando la imagen';
+    } catch (err: unknown) {
+      error.value = err instanceof Error ? err.message : 'Error procesando la imagen';
       throw err;
     } finally {
       isProcessing.value = false;

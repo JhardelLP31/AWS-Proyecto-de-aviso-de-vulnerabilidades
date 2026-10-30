@@ -37,6 +37,16 @@
           <span>🚨</span>
           <span>Despacho COER</span>
         </router-link>
+
+        <router-link
+          to="/riesgo"
+          v-can="'analytics.read'"
+          class="nav-btn"
+          active-class="active"
+        >
+          <span>🌧️</span>
+          <span>Riesgo FEN</span>
+        </router-link>
       </nav>
 
       <!-- Estado de Red y Sesión -->
@@ -88,6 +98,9 @@
         </transition>
       </router-view>
     </main>
+
+    <!-- Sistema Global de Notificaciones Toast -->
+    <AppToast />
   </div>
 </template>
 
@@ -95,6 +108,7 @@
 import { ref, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../stores/auth.store';
+import AppToast from '../shared/ui/AppToast.vue';
 
 const router = useRouter();
 const authStore = useAuthStore();

@@ -12,6 +12,8 @@ export const useLocationStore = defineStore('location', () => {
   const currentCoords = ref<LatLng | null>(null);
   const accuracyMeters = ref<number>(0);
   const isTracking = ref<boolean>(false);
+  const isPermissionDenied = ref<boolean>(false);
+  const permissionWarning = ref<string | null>(null);
   const error = ref<string | null>(null);
 
   let watchId: number | null = null;
@@ -21,7 +23,8 @@ export const useLocationStore = defineStore('location', () => {
    */
   function startTracking() {
     if (!navigator.geolocation) {
-      error.value = 'Geolocalización no soportada en este dispositivo';
+      error.value = 'Geolocalización no soportada en este navegador';
+      permissionWarning.value = 'Tu dispositivo no soporta geolocalización.';
       return;
     }
 
@@ -32,6 +35,8 @@ export const useLocationStore = defineStore('location', () => {
 
     watchId = navigator.geolocation.watchPosition(
       (position) => {
+        isPermissionDenied.value = false;
+        permissionWarning.value = null;
         currentCoords.value = {
           lat: position.coords.latitude,
           lng: position.coords.longitude,
@@ -39,7 +44,13 @@ export const useLocationStore = defineStore('location', () => {
         accuracyMeters.value = position.coords.accuracy;
       },
       (err) => {
-        console.warn('[LocationStore] Error de GPS:', err.message);
+        if (err.code === 1 /* PERMISSION_DENIED */) {
+          isPermissionDenied.value = true;
+          permissionWarning.value =
+            'Ubicación GPS denegada. Activa el acceso a tu ubicación para poder confirmar peligros in situ (<500 m).';
+        } else {
+          permissionWarning.value = `No se pudo obtener señal GPS precisa (${err.message}).`;
+        }
         error.value = err.message;
       },
       {
@@ -61,12 +72,19 @@ export const useLocationStore = defineStore('location', () => {
     isTracking.value = false;
   }
 
+  function dismissWarning() {
+    permissionWarning.value = null;
+  }
+
   return {
     currentCoords,
     accuracyMeters,
     isTracking,
+    isPermissionDenied,
+    permissionWarning,
     error,
     startTracking,
     stopTracking,
+    dismissWarning,
   };
 });

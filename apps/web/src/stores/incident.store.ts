@@ -5,6 +5,7 @@ import type {
   VoteKind,
   VoteRegisteredPayload,
   BBox,
+  TriageRequest,
 } from '@geoalert/contracts';
 import { http } from '../shared/api/http';
 
@@ -49,12 +50,27 @@ export const useIncidentStore = defineStore('incidents', () => {
       });
 
       return data;
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.warn('[IncidentStore] Error cargando incidentes por BBox:', err);
-      error.value = err.message || 'Error al cargar incidentes';
+      const msg = err instanceof Error ? err.message : 'Error al cargar incidentes';
+      error.value = msg;
       return [];
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  /**
+   * Recarga un incidente individual desde la API (útil tras STALE_VERSION 409).
+   */
+  async function fetchIncidentById(id: string): Promise<IncidentDTO | null> {
+    try {
+      const incident = await http.get<IncidentDTO>(`/api/incidents/${id}`);
+      incidents.value.set(incident.id, incident);
+      return incident;
+    } catch (err: unknown) {
+      console.warn(`[IncidentStore] Error recargando incidente ${id}:`, err);
+      return null;
     }
   }
 
@@ -69,8 +85,9 @@ export const useIncidentStore = defineStore('incidents', () => {
       const created = await http.post<IncidentDTO>('/api/incidents', formData);
       incidents.value.set(created.id, created);
       return created;
-    } catch (err: any) {
-      error.value = err.message || 'Error al registrar incidente';
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Error al registrar incidente';
+      error.value = msg;
       throw err;
     } finally {
       isLoading.value = false;
@@ -87,22 +104,34 @@ export const useIncidentStore = defineStore('incidents', () => {
     lng: number;
     comment?: string;
   }): Promise<VoteRegisteredPayload> {
-    try {
-      const result = await http.post<VoteRegisteredPayload>(
-        `/api/incidents/${params.incidentId}/vote`,
-        {
-          kind: params.kind,
-          lat: params.lat,
-          lng: params.lng,
-          comment: params.comment,
-        },
-      );
+    const result = await http.post<VoteRegisteredPayload>(
+      `/api/incidents/${params.incidentId}/vote`,
+      {
+        kind: params.kind,
+        lat: params.lat,
+        lng: params.lng,
+        comment: params.comment,
+      },
+    );
 
-      applyVoteUpdate(result);
-      return result;
-    } catch (err: any) {
-      throw err;
-    }
+    applyVoteUpdate(result);
+    return result;
+  }
+
+  /**
+   * Actualiza el triaje de un incidente (estado y/o severidad) llamando a PATCH /api/incidents/:id/triage.
+   * Utiliza bloqueo optimista con expectedVersion (T03-3).
+   */
+  async function updateTriage(
+    incidentId: string,
+    payload: TriageRequest,
+  ): Promise<IncidentDTO> {
+    const updated = await http.patch<IncidentDTO>(
+      `/api/incidents/${incidentId}/triage`,
+      payload,
+    );
+    incidents.value.set(updated.id, updated);
+    return updated;
   }
 
   /**
@@ -141,8 +170,10 @@ export const useIncidentStore = defineStore('incidents', () => {
     error,
     lastBBox,
     fetchIncidentsByBBox,
+    fetchIncidentById,
     createIncident,
     voteIncident,
+    updateTriage,
     applyVoteUpdate,
     upsertIncident,
     setActiveIncident,
