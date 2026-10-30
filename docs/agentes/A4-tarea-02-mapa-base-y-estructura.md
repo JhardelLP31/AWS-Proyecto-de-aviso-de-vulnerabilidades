@@ -67,12 +67,19 @@ Referencias: [protomaps-leaflet](https://github.com/protomaps/protomaps-leaflet)
   de `apps/web` cómo generarlo. Si pesa más de ~60 MB, bajar `--maxzoom` a 14 y anotar el tamaño final en tu avance.
 - Pedir a A5 (en tu avance) que lo publique en S3 + CloudFront para `stg`/`prod`.
 
-### T02-3 · Login: completar lo que falta
+### T02-3 · Login: corregir accesos rápidos, vista vacía y registro
 
-El login ya funciona (ver validación arriba). Falta:
-- Vista de registro `RegisterView.vue` → `POST /api/auth/register` (tipo `RegisterRequest`), con los mensajes del
-  backend para contraseña débil (400) y correo repetido (`EMAIL_ALREADY_REGISTERED`, 409).
-- Mensajes por código: 401 → "Correo o contraseña incorrectos"; 429 → "Demasiados intentos, espera un minuto".
+1. **Credenciales de los accesos rápidos (bug)**: `LoginView.vue` rellena `vecino@piura.gob.pe / Vecino2026!`,
+   `brigadista@indeci.gob.pe`, `coer@regionpiura.gob.pe` y `admin@geoalert.pe`, que **no existen en la API**.
+   Usar los usuarios demo del contrato: `vecino@demo.pe`, `brigadista@demo.pe`, `coer@demo.pe`, `admin@demo.pe`,
+   todos con `GeoAlert2026!` (ver [contratos.md](../contratos.md)). Hoy los cuatro botones fallan con 401.
+2. **Vista `/login` vacía en el equipo de Jhar (Windows, Chrome)**: la ruta y el título cambian, pero no se ve el formulario.
+   En Linux/Chromium headless no se reproduce (ni entrando directo ni desde el botón "Acceder").
+   Sospecha: `<transition name="fade" mode="out-in">` de `App.vue` combinado con el desmontaje de Leaflet
+   (`map.remove()` en `onUnmounted`) o la altura de `.main-content`. Reproducirlo en Windows, corregirlo y anotar la causa en tu avance.
+3. **Registro**: `RegisterView.vue` → `POST /api/auth/register` (tipo `RegisterRequest`), con los mensajes del
+   backend para contraseña débil (400) y correo repetido (`EMAIL_ALREADY_REGISTERED`, 409).
+4. Mensajes por código: 401 → "Correo o contraseña incorrectos"; 429 → "Demasiados intentos, espera un minuto".
 
 ### T02-4 · GPS denegado (obligatorio)
 
@@ -107,7 +114,7 @@ y los estilos de severidad), `shared/config/env.ts`, `composables/useGeolocation
 Reglas:
 1. Los componentes **no llaman a `fetch`**: usan stores, y los stores usan `shared/api`.
 2. Todos los tipos de la API vienen de `@geoalert/contracts`. Nada de redefinir `IncidentDTO` en el front.
-3. Ninguna URL externa ni clave fuera de `shared/config/env.ts` y `.env.example`.
+3. Ninguna URL externa ni clave fuera de `shared/config/env.ts` y `.env.example` (hoy `apps/web` no tiene `.env.example`: crearlo).
 4. Los errores se muestran según `code` (`GEOFENCE_VIOLATION`, `STALE_VERSION`, etc.), no según el texto.
 5. `<script setup lang="ts">` en todos los componentes; TypeScript estricto, sin `any`.
 6. `pnpm --filter <web> build` y `vue-tsc --noEmit` deben pasar antes de subir.
@@ -124,6 +131,8 @@ Reglas:
 - [ ] Cambiar `VITE_BASEMAP` a `openfreemap` u `osm` funciona sin tocar código.
 - [ ] Atribución de OpenStreetMap visible.
 - [x] Login con `coer@demo.pe` funciona; recargar la página mantiene la sesión (validado en 5c353b6).
+- [ ] Los 4 accesos rápidos inician sesión contra la API.
+- [ ] `/login` se ve en Windows/Chrome al llegar desde el mapa.
 - [ ] Registro funcional con mensajes de error por código.
 - [ ] Con el GPS denegado aparece el aviso y los votos quedan deshabilitados.
 - [ ] La estructura de `src/` sigue el §4 y el build pasa.
