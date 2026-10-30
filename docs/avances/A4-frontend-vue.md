@@ -9,7 +9,8 @@
 |---|---|
 | Fase actual | F1 · Auth, RBAC y datos mock |
 | Siguiente tarea | A4-F1-01 |
-| Estado | 🟡 pendiente de iniciar |
+| Ejecutado por | Antigravity |
+| Estado | 🟡 pendiente de iniciar · API lista: ver ../contratos.md |
 | Bloqueado por | — |
 | Última actualización | 2026-10-30 |
 

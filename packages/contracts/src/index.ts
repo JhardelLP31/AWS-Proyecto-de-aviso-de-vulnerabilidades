@@ -60,6 +60,92 @@ export interface MeDTO {
   permissions: string[];
 }
 
+/** Respuesta de POST /auth/login y /auth/register. Guardar csrfToken SOLO en memoria. */
+export interface SessionResponse {
+  user: MeDTO;
+  csrfToken: string;
+}
+
+/** Incidente tal como lo devuelve la API (incluye `version` para el bloqueo optimista del triaje). */
+export type IncidentResponse = IncidentDTO & { version: number };
+
+// ---------------------------------------------------------------------------
+// Peticiones (v1). El backend las valida con class-validator; el frontend las usa como tipos.
+// ---------------------------------------------------------------------------
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface RegisterRequest {
+  email: string;
+  /** ≥ 10 caracteres con mayúscula, minúscula y dígito. */
+  password: string;
+  displayName: string;
+  district?: string;
+  /** Celular peruano: 9XXXXXXXX o +519XXXXXXXX. */
+  phone?: string;
+}
+
+/**
+ * POST /api/incidents como multipart/form-data: estos campos como texto
+ * + hasta MAX_PHOTOS_PER_INCIDENT archivos en el campo `photos` (WebP ≤ MAX_PHOTO_BYTES).
+ */
+export interface CreateIncidentRequest {
+  type: IncidentType;
+  severity: Severity;
+  title: string;
+  description: string;
+  lat: number;
+  lng: number;
+  district?: string;
+  occurredAt?: string;
+}
+
+/** POST /api/incidents/:id/votes */
+export interface CastVoteRequest {
+  kind: VoteKind;
+  lat: number;
+  lng: number;
+  /** GeolocationCoordinates.accuracy en metros (máx. 250 para votar). */
+  accuracyM: number;
+}
+
+/** PATCH /api/incidents/:id/triage — al menos severity o status. */
+export interface TriageRequest {
+  severity?: Severity;
+  status?: IncidentStatus;
+  expectedVersion: number;
+}
+
+/** Errores de negocio (403/404/409/422) */
+export interface DomainApiError {
+  code: string;
+  message: string;
+  details?: Record<string, unknown>;
+}
+
+/** Errores de validación (400) y de framework (401/403/429) */
+export interface FrameworkApiError {
+  statusCode: number;
+  message: string | string[];
+  error?: string;
+}
+
+export type ApiError = DomainApiError | FrameworkApiError;
+
+export const DOMAIN_ERROR_CODES = [
+  'INCIDENT_NOT_FOUND',
+  'GEOFENCE_VIOLATION',
+  'SELF_VOTE_NOT_ALLOWED',
+  'INCIDENT_CLOSED',
+  'INVALID_PHOTO',
+  'OUT_OF_COVERAGE_AREA',
+  'STALE_VERSION',
+  'EMAIL_ALREADY_REGISTERED',
+] as const;
+
 /** [minLng, minLat, maxLng, maxLat] — mismo orden que GeoJSON / MapLibre. */
 export type BBox = [number, number, number, number];
 
@@ -68,6 +154,9 @@ export type BBox = [number, number, number, number];
 // ---------------------------------------------------------------------------
 
 export const WS_NAMESPACE = '/incidents';
+
+/** Versión del contrato. Cambio incompatible ⇒ subir mayor y anotarlo en docs/contratos.md. */
+export const CONTRACTS_VERSION = '1.0.0';
 
 export const WsEvents = {
   IncidentCreated: 'incident.created',

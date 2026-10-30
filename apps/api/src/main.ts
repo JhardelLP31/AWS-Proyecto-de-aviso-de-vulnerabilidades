@@ -12,7 +12,7 @@ async function bootstrap(): Promise<void> {
   configureApp(app);
   await app.listen(env.port);
   Logger.log(
-    `API en http://localhost:${env.port}/api · incidents=${env.incidentsDriver} · realtime=${env.realtimeDriver}`,
+    `API en http://localhost:${env.port}/api · data=${env.dataDriver} · realtime=${env.realtimeDriver}`,
     'Bootstrap',
   );
 }

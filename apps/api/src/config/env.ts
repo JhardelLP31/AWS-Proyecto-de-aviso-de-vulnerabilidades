@@ -1,6 +1,6 @@
 // Configuración tipada y validada una sola vez al arrancar (falla rápido si falta algo).
 
-type IncidentsDriver = 'mock' | 'postgres';
+type DataDriver = 'mock' | 'postgres';
 type RealtimeDriver = 'inprocess' | 'redis';
 type PhotoDriver = 'local' | 's3';
 
@@ -28,7 +28,11 @@ export const env = {
   webOrigin: read('WEB_ORIGIN', 'http://localhost:5173'),
   jwtSecret: read('JWT_SECRET', isProd ? undefined : 'dev-only-secret-change-me-dev-only-secret'),
   sessionTtlSeconds: Number(process.env.SESSION_TTL_SECONDS ?? 8 * 60 * 60),
-  incidentsDriver: oneOf<IncidentsDriver>('INCIDENTS_DRIVER', ['mock', 'postgres'], 'mock'),
+  /** mock = identidad, incidentes y auditoría en memoria | postgres = TypeORM + PostGIS. */
+  dataDriver: oneOf<DataDriver>('DATA_DRIVER', ['mock', 'postgres'], 'mock'),
+  databaseUrl: process.env.DATABASE_URL ?? 'postgresql://geoalert:geoalert@localhost:5432/geoalert',
+  databaseSsl: process.env.DATABASE_SSL === 'true',
+  databaseLogging: process.env.DATABASE_LOGGING === 'true',
   realtimeDriver: oneOf<RealtimeDriver>('REALTIME_DRIVER', ['inprocess', 'redis'], 'inprocess'),
   photoDriver: oneOf<PhotoDriver>('PHOTO_DRIVER', ['local', 's3'], 'local'),
   redisUrl: process.env.REDIS_URL ?? 'redis://localhost:6379',

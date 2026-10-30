@@ -15,13 +15,14 @@ modules/incidents/
 ├── dto/                    # class-validator + class-transformer (entrada) y mappers (salida)
 │   ├── create-incident.dto.ts
 │   └── incident-response.mapper.ts
-├── entities/               # @Entity de TypeORM (dueño: A2)
-│   └── incident.entity.ts
+├── entities/               # @Entity de TypeORM (dueño: A2). Entidades muy acopladas pueden ir en un archivo
+│   └── incident.entities.ts
 ├── repositories/           # Interfaz + implementaciones intercambiables
 │   ├── incident.repository.ts          # interface IIncidentRepository + token
 │   ├── typeorm-incident.repository.ts  # dueño: A2
 │   └── mock-incident.repository.ts
-├── domain/                 # Reglas puras (sin I/O): veracidad, transiciones, errores
+├── domain/                 # Reglas puras (sin I/O): veracidad, transiciones, errores, puertos
+├── adapters/               # Servicios externos detrás de un puerto (S3, almacenamiento local)
 ├── types/                  # Tipos e interfaces internas del módulo
 ├── decorators/  guards/  middlewares/  interceptors/  pipes/   # solo si son propios del módulo
 └── __tests__/
@@ -31,14 +32,16 @@ Lo transversal vive en `apps/api/src/common/` (dueño: A1):
 
 ```
 common/
-├── decorators/     @RequirePermissions, @Public, @CurrentUser, @Audit, @SkipAudit
-├── guards/         PermissionsGuard, WsAuthGuard
+├── decorators/     @RequirePermissions, @RequireAnyPermission, @Public, @CurrentUser, @Audit, @SkipAudit
+├── guards/         PermissionsGuard (WsAuthGuard en F3)
 ├── middlewares/    CsrfMiddleware, AuditContextMiddleware, RequestIdMiddleware
 ├── interceptors/   AuditInterceptor, TimeoutInterceptor
-├── pipes/          ParseBBoxPipe, ParseGeoPointPipe
+├── pipes/          ParseBBoxPipe
 ├── filters/        DomainExceptionFilter
-├── validators/     @IsInsidePiura, @IsWebpFile, @IsBBox (class-validator custom)
-└── types/          AccessProfile, AuthenticatedRequest
+├── validators/     @IsInsidePiura, @IsBBox, @IsStrongPassword (@IsWebpFile en F2)
+├── errors/         DomainError + httpStatusFor
+├── security/       hash de contraseñas (scrypt)
+└── types/          ampliación de Express.Request (principal, requestId)
 ```
 
 ## ORM: TypeORM
@@ -47,7 +50,9 @@ common/
 - `synchronize: false` siempre. Todo cambio de esquema va en una **migración** (`apps/api/src/database/migrations/`).
 - Columnas geográficas: `@Column({ type: 'geometry', spatialFeatureType: 'Point', srid: 4326 })` con índice `@Index({ spatial: true })`.
 - Repositorios del dominio **no** exponen `Repository<Entity>` de TypeORM fuera de `repositories/typeorm-*`.
-- El blueprint inicial usa Prisma (`apps/api/prisma/`); A2 lo reemplaza por TypeORM en la Fase 1 y elimina Prisma.
+- Comandos (sobre el código compilado, `pnpm build` antes): `pnpm migration:run | migration:revert | migration:generate src/database/migrations/<Nombre> | db:seed | db:import-indeci`.
+- Tras cambiar una entidad: `migration:generate`, revisar el SQL a mano y añadir la clase a `database/migrations/index.ts`.
+- El CI falla si una entidad cambió sin migración.
 
 ## Validación
 
@@ -64,5 +69,6 @@ common/
 
 ## Pruebas
 
-- Unitarias junto al módulo (`__tests__/*.spec.ts`), con `node:test` o Jest (A5 decide en Fase 1 y lo documenta aquí).
+- Runner: **`node:test`** (sin dependencias). Unitarias junto al módulo en `__tests__/*.spec.ts`; generales en `apps/api/test/*.test.ts`.
+- `pnpm --filter @geoalert/api test` compila y ejecuta todo. E2E: `API_URL=… node e2e/smoke.mjs` contra una API levantada.
 - Toda regla de dominio (veracidad, geocerca, transiciones) tiene pruebas con tablas de casos.

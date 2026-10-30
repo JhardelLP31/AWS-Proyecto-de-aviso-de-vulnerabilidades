@@ -1,0 +1,68 @@
+name: CI
+
+on:
+  push:
+    branches: [dev, stg, prod]
+  pull_request:
+    branches: [dev, stg, prod]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgis/postgis:16-3.4
+        env:
+          POSTGRES_USER: geoalert
+          POSTGRES_PASSWORD: geoalert
+          POSTGRES_DB: geoalert
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U geoalert -d geoalert"
+          --health-interval 5s --health-retries 10
+    env:
+      DATABASE_URL: postgresql://geoalert:geoalert@localhost:5432/geoalert
+      JWT_SECRET: ci-secret-ci-secret-ci-secret-ci-secret-1234
+      WEB_ORIGIN: http://localhost:5173
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @geoalert/contracts build
+      - name: Typecheck
+        run: pnpm --filter @geoalert/api typecheck
+      - name: Pruebas unitarias
+        run: pnpm --filter @geoalert/api test
+      - name: Migraciones (subir, bajar y volver a subir) y seeds
+        working-directory: apps/api
+        run: |
+          pnpm migration:run
+          pnpm migration:revert
+          pnpm migration:run
+          pnpm db:seed
+          pnpm db:import-indeci --synthetic
+      - name: El esquema coincide con las entidades
+        working-directory: apps/api
+        run: |
+          if pnpm migration:generate src/database/migrations/Drift 2>&1 | grep -q "No changes"; then
+            echo "Sin desfase entre entidades y migraciones"
+          else
+            echo "::error::Las entidades TypeORM cambiaron sin migración"; exit 1
+          fi
+      - name: Pruebas e2e contra Postgres
+        working-directory: apps/api
+        run: |
+          DATA_DRIVER=postgres PORT=3000 node dist/src/main.js > api.log 2>&1 &
+          for i in $(seq 1 30); do curl -sf localhost:3000/health && break; sleep 1; done
+          API_URL=http://localhost:3000 node ../../e2e/smoke.mjs || (cat api.log; exit 1)
+      - name: Bundle de Lambda
+        working-directory: apps/api
+        run: node scripts/build-lambda.mjs

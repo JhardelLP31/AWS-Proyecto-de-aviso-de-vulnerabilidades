@@ -3,7 +3,7 @@ import type { NestExpressApplication } from '@nestjs/platform-express';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import { env } from '../config/env';
-import { DomainExceptionFilter } from '../shared/domain-error';
+import { DomainExceptionFilter } from '../common/filters/domain-exception.filter';
 
 /** Configuración común a main.ts (local/contenedor) y lambda.ts (serverless). */
 export function configureApp(app: INestApplication): void {

@@ -1,7 +1,7 @@
 import { Module, Provider } from '@nestjs/common';
 import { env } from '../../config/env';
 import { INCIDENT_EVENTS } from '../incidents/domain/ports';
-import { IncidentsGateway } from './incidents.gateway';
+import { IncidentsGateway } from './gateways/incidents.gateway';
 import { IncidentEventsPublisher } from './publishers/incident-events.publisher';
 import { ROOM_BROADCASTER } from './rooms';
 

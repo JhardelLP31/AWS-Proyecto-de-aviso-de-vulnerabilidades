@@ -1,7 +1,7 @@
 import { DISPATCH_ROOM, realtimeCellsForPoint, roomForCell, roomForDistrict } from '@geoalert/contracts';
 import { env } from '../../config/env';
-import type { Incident } from '../incidents/domain/incident';
-import { toIncidentDTO } from '../incidents/presentation/incident.mapper';
+import type { Incident } from '../incidents/types/incident.types';
+import { toIncidentDTO } from '../incidents/dto/incident-response.mapper';
 
 /**
  * Un evento se emite a: celdas geohash (precisión 5 y 4) que cubren el punto,

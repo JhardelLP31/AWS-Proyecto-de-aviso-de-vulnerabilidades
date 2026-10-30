@@ -1,0 +1,27 @@
+# Servicios locales para DATA_DRIVER=postgres y REALTIME_DRIVER=redis.
+#   docker compose up -d
+#   cd apps/api && pnpm build && pnpm migration:run && pnpm db:seed && pnpm db:import-indeci --synthetic
+services:
+  postgres:
+    image: postgis/postgis:16-3.4
+    environment:
+      POSTGRES_USER: geoalert
+      POSTGRES_PASSWORD: geoalert
+      POSTGRES_DB: geoalert
+    ports: ["5432:5432"]
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U geoalert -d geoalert"]
+      interval: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    ports: ["6379:6379"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 10
+
+volumes:
+  pgdata:

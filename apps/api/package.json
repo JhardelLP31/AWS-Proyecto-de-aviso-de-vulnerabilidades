@@ -5,13 +5,18 @@
   "scripts": {
     "dev": "tsc -p tsconfig.json --watch --preserveWatchOutput & node --watch dist/src/main.js",
     "typecheck": "tsc --noEmit",
-    "test": "tsc -p tsconfig.json && node --test dist/test/",
+    "test": "tsc -p tsconfig.json && node --test \"dist/test/**/*.test.js\" \"dist/src/**/__tests__/*.spec.js\"",
     "build:lambda": "tsc -p tsconfig.json && node scripts/build-lambda.mjs",
     "prisma:generate": "prisma generate",
     "db:import-indeci": "node dist/scripts/import-indeci.js",
     "build": "tsc -p tsconfig.json",
     "start": "node dist/src/main.js",
-    "start:realtime": "node dist/src/main-realtime.js"
+    "start:realtime": "node dist/src/main-realtime.js",
+    "migration:run": "typeorm -d dist/src/database/data-source.js migration:run",
+    "migration:revert": "typeorm -d dist/src/database/data-source.js migration:revert",
+    "migration:generate": "typeorm -d dist/src/database/data-source.js migration:generate",
+    "migration:show": "typeorm -d dist/src/database/data-source.js migration:show",
+    "db:seed": "node dist/src/database/seeds/run-seeds.js"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.700.0",
@@ -23,8 +28,8 @@
     "@nestjs/platform-express": "^10.4.15",
     "@nestjs/platform-socket.io": "^10.4.15",
     "@nestjs/throttler": "^6.3.0",
+    "@nestjs/typeorm": "^10.0.2",
     "@nestjs/websockets": "^10.4.15",
-    "@prisma/client": "^5.22.0",
     "@socket.io/redis-adapter": "^8.3.0",
     "@socket.io/redis-emitter": "^5.1.0",
     "class-transformer": "^0.5.1",
@@ -35,9 +40,11 @@
     "helmet": "^8.0.0",
     "ioredis": "^5.4.2",
     "multer": "^1.4.5-lts.1",
+    "pg": "^8.23.1",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
-    "socket.io": "^4.8.1"
+    "socket.io": "^4.8.1",
+    "typeorm": "^0.3.31"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.146",
@@ -46,8 +53,8 @@
     "@types/express": "^4.17.21",
     "@types/multer": "^1.4.12",
     "@types/node": "^22.10.0",
+    "@types/pg": "^8.23.1",
     "esbuild": "^0.24.0",
-    "prisma": "^5.22.0",
     "typescript": "^5.6.3"
   }
 }

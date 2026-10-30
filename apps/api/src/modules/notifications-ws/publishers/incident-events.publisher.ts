@@ -1,6 +1,6 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { DISPATCH_ROOM, VoteRegisteredPayload, WsEvents } from '@geoalert/contracts';
-import type { Incident } from '../../incidents/domain/incident';
+import type { Incident } from '../../incidents/types/incident.types';
 import type { IIncidentEventsPublisher } from '../../incidents/domain/ports';
 import { ROOM_BROADCASTER, RoomBroadcaster, roomsForIncident, toWirePayload } from '../rooms';
 

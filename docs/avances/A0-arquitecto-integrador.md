@@ -7,19 +7,21 @@
 
 | Campo | Valor |
 |---|---|
-| Fase actual | F1 · Auth, RBAC y datos mock |
-| Siguiente tarea | A0-F1-01 |
-| Estado | 🟡 pendiente de iniciar |
-| Bloqueado por | — |
+| Ejecutado por | Claude |
+| Fase actual | F1 · cierre pendiente del frontend |
+| Siguiente tarea | A0-F1-04 |
+| Estado | 🟡 backend de F1 cerrado; falta el frontend (A4) |
+| Bloqueado por | A4 (login, guards de ruta, v-can) |
 | Última actualización | 2026-10-30 |
 
 ## Progreso de tareas
 
-Copia aquí el ID al completarlo, con el commit que lo cierra:
-
 | Tarea | Estado | Commit | Notas |
 |---|---|---|---|
-| A0-F1-01 | ⬜ pendiente | — | — |
+| A0-F1-01 | ✅ hecha | F1-backend | `CONTRACTS_VERSION = 1.0.0`, ver docs/contratos.md |
+| A0-F1-02 | ✅ hecha | F1-backend | `LoginRequest`, `RegisterRequest`, `CreateIncidentRequest`, `CastVoteRequest`, `TriageRequest`, `ApiError` |
+| A0-F1-03 | ✅ hecha | F1-backend | Estructura resource + `common/` aplicada; CONVENCIONES actualizado |
+| A0-F1-04 | ⬜ pendiente | — | Cerrar cuando A4 entregue login + guards contra la API |
 
 Leyenda: ⬜ pendiente · 🔄 en curso · ✅ hecha · ⛔ bloqueada
 
@@ -27,13 +29,14 @@ Leyenda: ⬜ pendiente · 🔄 en curso · ✅ hecha · ⛔ bloqueada
 
 | Fecha | Fase | Qué se hizo | Commit |
 |---|---|---|---|
-| 2026-10-30 | F0 | Blueprint inicial del backend, roles y roadmap creados | — |
+| 2026-10-30 | F0 | Blueprint inicial del backend, roles y roadmap | 22c8f8c |
+| 2026-10-30 | F1 | Contratos v1 y docs/contratos.md para el frontend | F1-backend |
 
 ## Solicitudes a otros agentes
 
 | Para | Qué necesito | Por qué | Estado |
 |---|---|---|---|
-| — | — | — | — |
+| A4 | Usar solo tipos de `@geoalert/contracts` y seguir docs/contratos.md | Evitar desalineación front/back | abierta |
 
 ## Solicitudes recibidas
 
@@ -43,4 +46,4 @@ Leyenda: ⬜ pendiente · 🔄 en curso · ✅ hecha · ⛔ bloqueada
 
 ## Decisiones y notas técnicas
 
-- (vacío)
+- El frontend lo desarrolla Antigravity (A4). El resto de roles los ejecuta Claude.

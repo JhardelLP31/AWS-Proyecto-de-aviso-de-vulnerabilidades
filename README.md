@@ -20,12 +20,31 @@ Plataforma colaborativa en tiempo real para reportar, validar y despachar emerge
 
 Solo `dev` (integración), `stg` (pre-producción) y `prod` (producción). Ver [A5](docs/agentes/A5-devops-qa.md).
 
-## Arranque local (modo mock, sin base de datos)
+## Arranque local
+
+### Modo mock (sin base de datos)
 
 ```bash
 pnpm install
 pnpm --filter @geoalert/contracts build
 cd apps/api && cp .env.example .env && pnpm build && pnpm start
-# API en http://localhost:3000/api  ·  usuarios demo: vecino@demo.pe, brigadista@demo.pe, coer@demo.pe, admin@demo.pe
-# contraseña demo: GeoAlert2026!
+```
+
+### Modo PostgreSQL + PostGIS
+
+```bash
+docker compose up -d
+cd apps/api && pnpm build
+pnpm migration:run && pnpm db:seed && pnpm db:import-indeci --synthetic
+DATA_DRIVER=postgres pnpm start
+```
+
+API en `http://localhost:3000/api` · contrato en [docs/contratos.md](docs/contratos.md)
+Usuarios demo: `vecino@demo.pe`, `brigadista@demo.pe`, `coer@demo.pe`, `admin@demo.pe` — contraseña `GeoAlert2026!`
+
+### Pruebas
+
+```bash
+pnpm --filter @geoalert/api test                     # unitarias
+API_URL=http://localhost:3000 node e2e/smoke.mjs     # e2e contra una API levantada
 ```

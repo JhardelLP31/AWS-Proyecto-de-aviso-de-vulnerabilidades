@@ -21,9 +21,24 @@ await build({
     '@nestjs/platform-socket.io', // en Lambda no hay servidor WebSocket (REALTIME_DRIVER=redis)
     '@fastify/static',
     'class-transformer/storage',
-    // Prisma trae su motor nativo: se publica como Lambda Layer (node_modules/.prisma + @prisma/client).
-    '@prisma/client',
-    '.prisma/client',
+    // Drivers opcionales de TypeORM que no usamos (solo PostgreSQL vía `pg`).
+    'mysql',
+    'mysql2',
+    'sqlite3',
+    'better-sqlite3',
+    'sql.js',
+    'oracledb',
+    'mssql',
+    'mongodb',
+    'hdb-pool',
+    '@sap/hana-client',
+    '@sap/hana-client/extension/Stream',
+    'typeorm-aurora-data-api-driver',
+    'react-native-sqlite-storage',
+    '@google-cloud/spanner',
+    'pg-native',
+    'pg-query-stream',
+    'redis',
     // El runtime de Lambda ya incluye AWS SDK v3.
     '@aws-sdk/*',
   ],

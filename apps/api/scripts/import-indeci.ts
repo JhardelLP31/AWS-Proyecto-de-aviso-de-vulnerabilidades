@@ -1,17 +1,19 @@
 /**
- * Migración del dataset mock → PostgreSQL/PostGIS.
+ * Migración del dataset mock → PostgreSQL/PostGIS (requiere `pnpm build` y `pnpm migration:run`).
  *
- *   pnpm --filter @geoalert/api db:import-indeci -- ./data/indeci-piura.json
- *   pnpm --filter @geoalert/api db:import-indeci -- --synthetic      (5 000 sintéticos)
+ *   pnpm db:import-indeci ./data/indeci-piura.json
+ *   pnpm db:import-indeci --synthetic          (5 000 registros sintéticos)
  *
- * Idempotente: `externalRef` es UNIQUE y se usa skipDuplicates, así que se puede
- * re-ejecutar tras corregir el mapeo sin duplicar filas. Los registros inválidos se
- * reportan en un archivo de rechazos en lugar de abortar todo el lote.
+ * Idempotente: `external_ref` es UNIQUE y se inserta con ON CONFLICT DO NOTHING, así que se
+ * puede re-ejecutar tras corregir el mapeo sin duplicar filas. Los registros inválidos se
+ * escriben en import-rechazos.json en lugar de abortar el lote.
  */
-import { PrismaClient } from '@prisma/client';
+import 'reflect-metadata';
 import { readFile, writeFile } from 'node:fs/promises';
-import { IndeciRecord, mapIndeciRecord } from '../src/modules/incidents/infrastructure/indeci.mapper';
-import { generateSyntheticIndeci } from '../src/modules/incidents/infrastructure/synthetic-dataset';
+import dataSource from '../src/database/data-source';
+import { IncidentEntity } from '../src/modules/incidents/entities/incident.entities';
+import { IndeciRecord, mapIndeciRecord } from '../src/modules/incidents/repositories/indeci/indeci.mapper';
+import { generateSyntheticIndeci } from '../src/modules/incidents/repositories/indeci/synthetic-dataset';
 
 const BATCH = 500;
 
@@ -20,7 +22,7 @@ async function main(): Promise<void> {
   const records: IndeciRecord[] =
     arg === '--synthetic' ? generateSyntheticIndeci() : (JSON.parse(await readFile(arg, 'utf8')) as IndeciRecord[]);
 
-  const prisma = new PrismaClient();
+  await dataSource.initialize();
   const rejected: Array<{ codigo: string; error: string }> = [];
   let inserted = 0;
 
@@ -41,12 +43,20 @@ async function main(): Promise<void> {
           return [];
         }
       });
-      const { count } = await prisma.incident.createMany({ data: rows, skipDuplicates: true });
+      const result = await dataSource
+        .createQueryBuilder()
+        .insert()
+        .into(IncidentEntity)
+        .values(rows)
+        .orIgnore()
+        .returning('id')
+        .execute();
+      const count = (result.raw as unknown[]).length;
       inserted += count;
       console.log(`Lote ${i / BATCH + 1}: ${count}/${rows.length} insertados`);
     }
   } finally {
-    await prisma.$disconnect();
+    await dataSource.destroy();
   }
 
   if (rejected.length) await writeFile('./import-rechazos.json', JSON.stringify(rejected, null, 2));
