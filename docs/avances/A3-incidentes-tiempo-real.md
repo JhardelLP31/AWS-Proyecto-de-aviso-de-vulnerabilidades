@@ -32,6 +32,7 @@ Leyenda: ⬜ pendiente · 🔄 en curso · ✅ hecha · ⛔ bloqueada
 | Fecha | Fase | Qué se hizo | Commit |
 |---|---|---|---|
 | 2026-10-30 | F1 | Módulo incidents reestructurado como resource y pruebas del service | F1-backend |
+| 2026-10-30 | F2 | Módulo `risk`: heatmap, ranking por distrito y predicción empírica con los datos guía de `data/` (11 pruebas + paso e2e) | este commit |
 
 ## Solicitudes a otros agentes
 

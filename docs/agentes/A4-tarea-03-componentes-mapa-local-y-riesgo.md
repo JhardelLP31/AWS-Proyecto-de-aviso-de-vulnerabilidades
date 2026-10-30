@@ -86,12 +86,12 @@ demás usuarios nunca lo ven.
 - `STALE_VERSION` (409) → toast "Otro operador actualizó este incidente" y recarga del incidente.
 - "Despachar brigada" queda deshabilitado con el texto "Próximamente" hasta que exista el endpoint (F3).
 
-### T03-4 · Capa de riesgo histórico y predicción (cuando A3 publique los endpoints)
+### T03-4 · Capa de riesgo histórico y predicción (desbloqueada: endpoints ya en `dev`)
 
 Jhar añadió datos guía en `data/indeci_historico_piura.{csv,json}`: 5 000 emergencias SINPAD de Piura (2010–2023),
 7 distritos, con precipitación, vulnerabilidad del suelo, severidad, damnificados y coordenadas.
-**El frontend no lee esos archivos**: A3 los carga en la API y expone (contrato provisional, se fija en
-`docs/contratos.md`):
+**El frontend no lee esos archivos**: la API los carga y expone estos endpoints (contrato 1.1.0, tipos en
+`@geoalert/contracts`, detalle en `docs/contratos.md`):
 
 | Endpoint | Devuelve | Uso en el front |
 |---|---|---|
@@ -106,7 +106,8 @@ Requisitos de interfaz:
   pronóstico oficial"**. Los datos son de guía: no se presentan como modelo entrenado.
 - Ruta `/riesgo`, protegida por el permiso `analytics.read`.
 
-Hasta que existan los endpoints, trabaja T03-1 a T03-3; A0 avisará en tu avance cuando T03-4 esté desbloqueada.
+Si `extrapolated` es `true` en un distrito, muestra "baja confianza". El texto de la leyenda es `RISK_DISCLAIMER`
+(contratos), no lo escribas a mano. Usuario para probar: `coer@demo.pe` (tiene `analytics.read`).
 
 ## 3. Criterios de aceptación (los valida A0)
 

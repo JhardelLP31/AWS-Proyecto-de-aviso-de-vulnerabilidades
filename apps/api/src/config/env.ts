@@ -40,6 +40,8 @@ export const env = {
   photoPublicBaseUrl: read('PHOTO_PUBLIC_BASE_URL', '/media'),
   localPhotoDir: process.env.LOCAL_PHOTO_DIR ?? './var/media',
   mockDatasetPath: process.env.MOCK_DATASET_PATH ?? './data/indeci-piura.json',
+  /** Datos guía de riesgo histórico (relativo a apps/api). En Lambda, build:lambda lo copia junto al bundle. */
+  riskDatasetPath: process.env.RISK_DATASET_PATH ?? '../../data/indeci_historico_piura.json',
 } as const;
 
 if (env.isProd && env.jwtSecret.length < 32) {

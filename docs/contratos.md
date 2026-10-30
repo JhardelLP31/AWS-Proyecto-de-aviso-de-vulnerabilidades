@@ -27,6 +27,13 @@ Tipos TypeScript: `@geoalert/contracts` (`packages/contracts/src/index.ts`). Ver
 | PATCH | `/api/incidents/:id/triage` | `triage.update` | `TriageRequest` | `IncidentResponse` |
 | POST | `/api/incidents/:id/verify` | `incidents.verify` | `{ expectedVersion }` | `201 IncidentResponse` |
 | GET | `/api/analytics/summary` | `analytics.read` | `?days=7` | resumen (Fase 4) |
+| GET | `/api/risk/heatmap` | público | `?bbox=minLng,minLat,maxLng,maxLat` (opcional) | `RiskHeatCell[]` (celdas de ~1 km, `weight` 0..1; caché 1 h) |
+| GET | `/api/risk/districts` | `analytics.read` | — | `DistrictRiskSummary[]` (de mayor a menor `riskScore`) |
+| GET | `/api/risk/forecast` | `analytics.read` | `?precipitationMm=0..500` | `RiskForecastResponse` (incluye `disclaimer`, que se muestra siempre) |
+
+> Los endpoints `/api/risk/*` usan los **datos guía** de `data/indeci_historico_piura.json` (5 000 eventos 2010–2023).
+> La predicción es empírica: cuenta las severidades de eventos con lluvia parecida (± 10 mm, ampliable a ± 40 mm).
+> Si no hay eventos parecidos, usa los 10 más cercanos y marca `extrapolated: true` (mostrar "baja confianza").
 
 ## Códigos de error de dominio
 
@@ -57,3 +64,4 @@ Tipos TypeScript: `@geoalert/contracts` (`packages/contracts/src/index.ts`). Ver
 ## Changelog
 
 - **1.0.0** (F1): primera versión congelada.
+- **1.1.0**: riesgo histórico (`RiskHeatCell`, `DistrictRiskSummary`, `RiskForecastResponse`, `RISK_DISCLAIMER`). Solo añade; compatible.

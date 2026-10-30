@@ -143,6 +143,20 @@ await step('campo no permitido → 400', async () => {
   assert.equal(r.status, 400);
 });
 
+await step('riesgo histórico: heatmap público, ranking y predicción solo con analytics.read', async () => {
+  const heat = await anon.req('GET', '/api/risk/heatmap?bbox=-80.7,-5.3,-80.5,-5.1');
+  assert.equal(heat.status, 200);
+  assert.ok(heat.body.length > 0 && heat.body[0].weight === 1);
+  assert.equal((await vecino.req('GET', '/api/risk/districts')).status, 403);
+  const ranking = await coer.req('GET', '/api/risk/districts');
+  assert.equal(ranking.status, 200);
+  assert.ok(ranking.body.length > 0);
+  const f = await coer.req('GET', '/api/risk/forecast?precipitationMm=90');
+  assert.equal(f.status, 200);
+  assert.ok(f.body.disclaimer && f.body.districts.length === ranking.body.length);
+  assert.equal((await coer.req('GET', '/api/risk/forecast?precipitationMm=-1')).status, 400);
+});
+
 await step('logout cierra la sesión', async () => {
   assert.equal((await vecino.req('POST', '/api/auth/logout')).status, 204);
   vecino.csrf = null;

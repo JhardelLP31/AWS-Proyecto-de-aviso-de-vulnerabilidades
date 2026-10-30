@@ -8,7 +8,7 @@ para que puedan trabajar en paralelo sobre `dev` sin conflictos.
 | A0 | Arquitecto e Integrador | Claude | `packages/contracts/`, `docs/`, archivos raíz, `apps/api/src/app.module.ts` | [A0](A0-arquitecto-integrador.md) | [avance](../avances/A0-arquitecto-integrador.md) |
 | A1 | Backend Plataforma y Seguridad | Claude | `apps/api/src/modules/{auth,rbac,audit}/`, `apps/api/src/common/`, `apps/api/src/config/` | [A1](A1-backend-plataforma.md) | [avance](../avances/A1-backend-plataforma.md) |
 | A2 | Datos, TypeORM y Geoespacial | Claude | `apps/api/src/database/`, `apps/api/src/modules/*/entities/`, `apps/api/src/modules/*/repositories/typeorm-*`, `apps/api/scripts/` | [A2](A2-datos-typeorm.md) | [avance](../avances/A2-datos-typeorm.md) |
-| A3 | Incidentes, Veracidad y Tiempo Real | Claude | `apps/api/src/modules/{incidents,notifications-ws,analytics}/` (excepto `entities/` y `typeorm-*`) | [A3](A3-incidentes-tiempo-real.md) | [avance](../avances/A3-incidentes-tiempo-real.md) |
+| A3 | Incidentes, Veracidad y Tiempo Real | Claude | `apps/api/src/modules/{incidents,notifications-ws,analytics,risk}/` (excepto `entities/` y `typeorm-*`) | [A3](A3-incidentes-tiempo-real.md) | [avance](../avances/A3-incidentes-tiempo-real.md) |
 | A4 | Frontend Vue 3 | Antigravity | `apps/web/` | [A4](A4-frontend-vue.md) | [avance](../avances/A4-frontend-vue.md) |
 | A5 | DevOps Serverless y QA | Claude | `infra/`, `.github/`, `apps/api/src/lambda.ts`, `apps/api/src/main-realtime.ts`, `apps/api/scripts/build-lambda.mjs`, `e2e/` | [A5](A5-devops-qa.md) | [avance](../avances/A5-devops-qa.md) |
 

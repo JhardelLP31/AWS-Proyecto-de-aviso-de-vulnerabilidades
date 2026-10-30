@@ -1,6 +1,7 @@
 // Empaqueta la API en un único archivo tree-shaken para AWS Lambda (Node 22).
 // Paso 1 (`tsc`): compila con emitDecoratorMetadata, que Nest necesita y esbuild no genera.
 // Paso 2 (este script): esbuild empaqueta el JS compilado y elimina código muerto.
+import { copyFile, mkdir } from 'node:fs/promises';
 import { build } from 'esbuild';
 
 await build({
@@ -44,3 +45,7 @@ await build({
   ],
   logLevel: 'info',
 });
+
+// Datos guía de riesgo histórico: viajan con el bundle (RISK_DATASET_PATH=./data/indeci_historico_piura.json en Lambda).
+await mkdir('dist/lambda/data', { recursive: true });
+await copyFile('../../data/indeci_historico_piura.json', 'dist/lambda/data/indeci_historico_piura.json');

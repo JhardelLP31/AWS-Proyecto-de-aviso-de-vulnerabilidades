@@ -9,6 +9,7 @@ import { requestIdMiddleware } from './common/middlewares/request-id.middleware'
 import { env } from './config/env';
 import { DatabaseModule } from './database/database.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
+import { RiskModule } from './modules/risk/risk.module';
 import { AuditModule } from './modules/audit/audit.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { IncidentsModule } from './modules/incidents/incidents.module';
@@ -34,6 +35,7 @@ class HealthController {
     RbacModule,
     IncidentsModule,
     AnalyticsModule,
+    RiskModule,
   ],
   controllers: [HealthController],
   providers: [
