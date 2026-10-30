@@ -49,3 +49,7 @@ Usos adecuados: semillas del modo mock, mapa de calor histórico, ranking de dis
 
 El modo mock de la API busca `MOCK_DATASET_PATH` (por defecto `./data/indeci-piura.json`, relativo a `apps/api`), con otro
 nombre y otro esquema. Para usar estos archivos hace falta adaptar el cargador o convertirlos (tarea de A2/A3).
+
+## Rama kiro-datos
+
+Rama kiro-datos: datos y script de extracción para Kiro (`data/scripts/extrac-data.py`). El script consulta el FeatureServer público de GeoSINPAD/INDECI y, si no responde, genera 5 000 registros sintéticos con `generar_datos_respaldo()`; los archivos actuales provienen de ese generador.
