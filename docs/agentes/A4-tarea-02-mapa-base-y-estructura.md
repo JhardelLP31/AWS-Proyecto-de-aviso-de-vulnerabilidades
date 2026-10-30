@@ -3,6 +3,7 @@
 > **Para**: Antigravity (A4 · Frontend Vue 3)
 > **De**: A0 (Claude), a pedido de Jhar · 2026-10-30
 > **Prioridad**: alta (bloquea la demo) · **Rama**: `dev`
+> Sustituye a `docs/propuestas/PROPUESTA-Coordinador-a-A4-mapa-base-y-estructura-frontend.md` (borrador local, no subido).
 > Al empezar, añade esta tarea a *Solicitudes recibidas* de tu avance y márcala al terminar.
 
 ## 1. Problema
@@ -16,7 +17,8 @@ Además, la consola muestra `[LocationStore] Error de GPS: User denied Geolocati
 
 > **Validado por A0 sobre `dev` (commit 5c353b6)**: el build (`vue-tsc` + `vite build`) pasa; el login con
 > `coer@demo.pe` funciona, la sesión se restaura al recargar (`/auth/csrf` + `/auth/me` → 200) y `/dispatch`
-> respeta el permiso `alerts.receive`. La vista `/login` "vacía" que vio Jhar era una copia local anterior a ese commit.
+> respeta el permiso `alerts.receive`. La vista `/login` "vacía" que se vio en el equipo de Jhar era una captura en mitad
+> de la animación de cambio de página: el login funciona también allí.
 
 ## 2. Decisión: el mapa base no depende de servicios externos con clave
 
@@ -39,6 +41,9 @@ Referencias: [protomaps-leaflet](https://github.com/protomaps/protomaps-leaflet)
 ## 3. Qué hacer
 
 ### T02-1 · Capa de mapa base configurable (obligatorio)
+
+**Orden de entrega**: primero `osm` como valor por defecto (arregla el mapa hoy, en minutos); cuando T02-2 tenga el
+archivo de Piura, el valor por defecto pasa a `pmtiles`. Ambos quedan disponibles por variable de entorno.
 
 1. Crear `src/shared/map/basemap.ts` como **único lugar** que sabe de proveedores de teselas:
    ```ts
@@ -71,15 +76,12 @@ Referencias: [protomaps-leaflet](https://github.com/protomaps/protomaps-leaflet)
 
 1. **Credenciales de los accesos rápidos (bug)**: `LoginView.vue` rellena `vecino@piura.gob.pe / Vecino2026!`,
    `brigadista@indeci.gob.pe`, `coer@regionpiura.gob.pe` y `admin@geoalert.pe`, que **no existen en la API**.
-   Usar los usuarios demo del contrato: `vecino@demo.pe`, `brigadista@demo.pe`, `coer@demo.pe`, `admin@demo.pe`,
+   Usar los usuarios demo del contrato, moverlos a `shared/config/demo-profiles.ts` y mostrarlos solo si `import.meta.env.DEV` o `VITE_DEMO_MODE=true`.
+   Usuarios: `vecino@demo.pe`, `brigadista@demo.pe`, `coer@demo.pe`, `admin@demo.pe`,
    todos con `GeoAlert2026!` (ver [contratos.md](../contratos.md)). Hoy los cuatro botones fallan con 401.
-2. **Vista `/login` vacía en el equipo de Jhar (Windows, Chrome)**: la ruta y el título cambian, pero no se ve el formulario.
-   En Linux/Chromium headless no se reproduce (ni entrando directo ni desde el botón "Acceder").
-   Sospecha: `<transition name="fade" mode="out-in">` de `App.vue` combinado con el desmontaje de Leaflet
-   (`map.remove()` en `onUnmounted`) o la altura de `.main-content`. Reproducirlo en Windows, corregirlo y anotar la causa en tu avance.
-3. **Registro**: `RegisterView.vue` → `POST /api/auth/register` (tipo `RegisterRequest`), con los mensajes del
+2. **Registro**: `RegisterView.vue` → `POST /api/auth/register` (tipo `RegisterRequest`), con los mensajes del
    backend para contraseña débil (400) y correo repetido (`EMAIL_ALREADY_REGISTERED`, 409).
-4. Mensajes por código: 401 → "Correo o contraseña incorrectos"; 429 → "Demasiados intentos, espera un minuto".
+3. Mensajes por código: 401 → "Correo o contraseña incorrectos"; 429 → "Demasiados intentos, espera un minuto".
 
 ### T02-4 · GPS denegado (obligatorio)
 
@@ -109,7 +111,7 @@ apps/web/src/
 
 Estado actual frente a esta estructura: ya existen `app/`, `shared/api`, `shared/ui`, `stores/`, `composables/`,
 `directives/` y `features/{auth,map,report,dispatch}`. **Faltan** `shared/map/` (sacar de `DisasterMap.vue` la capa base
-y los estilos de severidad), `shared/config/env.ts`, `composables/useGeolocation.ts` y `features/auth/RegisterView.vue`.
+y los colores de severidad: hoy están repetidos en tres lugares; dejar una sola fuente en `shared/map/severity-style.ts`), `shared/config/env.ts`, `composables/useGeolocation.ts` y `features/auth/RegisterView.vue`.
 
 Reglas:
 1. Los componentes **no llaman a `fetch`**: usan stores, y los stores usan `shared/api`.
@@ -132,7 +134,6 @@ Reglas:
 - [ ] Atribución de OpenStreetMap visible.
 - [x] Login con `coer@demo.pe` funciona; recargar la página mantiene la sesión (validado en 5c353b6).
 - [ ] Los 4 accesos rápidos inician sesión contra la API.
-- [ ] `/login` se ve en Windows/Chrome al llegar desde el mapa.
 - [ ] Registro funcional con mensajes de error por código.
 - [ ] Con el GPS denegado aparece el aviso y los votos quedan deshabilitados.
 - [ ] La estructura de `src/` sigue el §4 y el build pasa.
