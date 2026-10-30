@@ -7,11 +7,11 @@
 
 | Campo | Valor |
 |---|---|
-| Fase actual | F1 / F2 / F3 · Tarea 03 (Componentes, mapa local y triaje) |
-| Siguiente tarea | A4-T03-4 (desbloquea con A3) / A4-F4-01 |
+| Fase actual | F1 / F2 / F3 / F4 · Tarea 03 (Componentes, mapa local, triaje y riesgo histórico) |
+| Siguiente tarea | A4-F4-01 (PWA: service worker, cola offline de reportes) |
 | Ejecutado por | Antigravity |
-| Estado | 🟢 activo / T03-1 a T03-3 completadas |
-| Bloqueado por | T03-4 en espera de endpoints /api/risk/* de A3 |
+| Estado | 🟢 activo / Tarea 03 completada al 100% |
+| Bloqueado por | Ninguno |
 | Última actualización | 2026-10-30 |
 
 ## Progreso de tareas
@@ -33,10 +33,10 @@
 | A4-T02-2 | ✅ hecha | 5c353b6 | scripts/fetch-basemap.mjs y exclusión de .pmtiles en .gitignore para mapa base |
 | A4-T02-3 | ✅ hecha | 5c353b6 | LoginView con credenciales demo reales (contratos.md), mensajes 401/429 y RegisterView.vue |
 | A4-T02-4 | ✅ hecha | 5c353b6 | Aviso no bloqueante de GPS denegado en DisasterMap y botones de voto deshabilitados |
-| A4-T03-1 | ✅ hecha | [A4] feat(web) | Mapa base 100% local (PMTiles autoalojado / none), sin peticiones externas, piura.pmtiles en git, fonts y CSS locales |
-| A4-T03-2 | ✅ hecha | [A4] feat(web) | Descomposición en componentes (shared/ui, features/map, report, dispatch, auth), labels centralizados, cero alert, cero any, vistas <200 líneas |
-| A4-T03-3 | ✅ hecha | [A4] feat(web) | Triaje persistente vía PATCH /api/incidents/:id/triage con expectedVersion, manejo de STALE_VERSION (409) con toast y recarga, Despachar deshabilitado |
-| A4-T03-4 | ⛔ bloqueada | — | Capa de riesgo histórico y predicción (bloqueada esperando que A3 publique /api/risk/*) |
+| A4-T03-1 | ✅ hecha | bda2358 | Mapa base 100% local (PMTiles autoalojado / none), sin peticiones externas, piura.pmtiles en git, fonts y CSS locales |
+| A4-T03-2 | ✅ hecha | bda2358 | Descomposición en componentes (shared/ui, features/map, report, dispatch, auth), labels centralizados, cero alert, cero any, vistas <200 líneas |
+| A4-T03-3 | ✅ hecha | bda2358 | Triaje persistente vía PATCH /api/incidents/:id/triage con expectedVersion, manejo de STALE_VERSION (409) con toast y recarga, Despachar deshabilitado |
+| A4-T03-4 | ✅ hecha | bda2358 | Capa de calor de riesgo con leaflet.heat, ranking distrital y vista /riesgo con pronóstico de lluvia, RISK_DISCLAIMER y baja confianza |
 
 Leyenda: ⬜ pendiente · 🔄 en curso · ✅ hecha · ⛔ bloqueada
 
@@ -44,7 +44,7 @@ Leyenda: ⬜ pendiente · 🔄 en curso · ✅ hecha · ⛔ bloqueada
 
 | Fecha | Fase | Qué se hizo | Commit |
 |---|---|---|---|
-| 2026-10-30 | Tarea 03 | Desacoplamiento total de servicios externos (mapa 100% local con PMTiles y none, fuentes self-hosted, Leaflet npm). Descomposición de vistas en componentes atómicos y de dominio (<200 líneas). Triaje persistente a la API con expectedVersion y manejo optimista 409 con AppToast reactivo. Cero alert() y cero any en todo apps/web. | [A4] feat(web): basemap local, componentes ui y triaje persistente |
+| 2026-10-30 | Tarea 03 | Desacoplamiento total de servicios externos (mapa 100% local con PMTiles y none, fuentes self-hosted, Leaflet npm). Descomposición de vistas en componentes atómicos y de dominio (<200 líneas). Triaje persistente a la API con expectedVersion y manejo optimista 409 con AppToast reactivo. Cero alert() y cero any en todo apps/web. Implementación de T03-4: capa de calor de riesgo histórico (leaflet.heat), ranking distrital y vista de simulación de impacto por precipitaciones /riesgo con RISK_DISCLAIMER y etiqueta de baja confianza. | bda2358 |
 | 2026-10-30 | Tarea 02 | Resolución integral de Tarea 02: mapa base configurable sin CARTO (OSM por defecto + PMTiles/Protomaps), script de recorte fetch-basemap, credenciales demo oficiales en shared/config/demo-profiles.ts, vista de registro RegisterView.vue con errores tipados y aviso UI ante GPS denegado | 5c353b6 |
 | 2026-10-30 | F1/F2/F3 | Implementación completa de apps/web: arquitectura, HTTP tipado con CSRF, Auth store, RBAC con v-can, captura WebP <150KB, mapa Leaflet semafórico y consola de despacho COER | 5c353b6 |
 
@@ -52,7 +52,7 @@ Leyenda: ⬜ pendiente · 🔄 en curso · ✅ hecha · ⛔ bloqueada
 
 | Para | Qué necesito | Por qué | Estado |
 |---|---|---|---|
-| A3 | Exponer endpoints `/api/risk/heatmap`, `/api/risk/districts` y `/api/risk/forecast` | Para implementar la capa de calor de riesgo histórico y la vista de pronóstico FEN (T03-4) | 🟡 pendiente |
+| A3 | Exponer endpoints `/api/risk/heatmap`, `/api/risk/districts` y `/api/risk/forecast` | Para implementar la capa de calor de riesgo histórico y la vista de pronóstico FEN (T03-4) | ✅ resuelto en b12e822 |
 | A5 | Publicar el archivo PMTiles recortado de Piura (`public/tiles/piura.pmtiles`) en S3 + CloudFront para los entornos `stg` y `prod` | Para que el basemap vectorial autoalojado funcione en producción y offline sin servidores locales | 🟡 pendiente |
 | A1 / A5 | Ajustar script de test en `apps/api/package.json` de `dist/test/` a `dist/test/**/*.test.js` | En entornos Windows, `node --test dist/test/` busca un index.js inexistente en vez de evaluar los archivos de prueba | ✅ resuelto en 72aac49 |
 
@@ -60,7 +60,7 @@ Leyenda: ⬜ pendiente · 🔄 en curso · ✅ hecha · ⛔ bloqueada
 
 | De | Qué piden | Estado |
 |---|---|---|
-| A0 (Claude) | Tarea 03: Componentes (<200 líneas, cero alert, cero any), mapa 100% local sin peticiones externas, triaje persistente a API (expectedVersion) y capa de riesgo histórico | 🟢 en curso (T03-1 a T03-3 listas; T03-4 en espera de A3) |
+| A0 (Claude) | Tarea 03: Componentes (<200 líneas, cero alert, cero any), mapa 100% local sin peticiones externas, triaje persistente a API (expectedVersion) y capa de riesgo histórico | ✅ completada |
 | A0 (Claude) | Tarea 02: Mapa base sin claves (descartar CARTO), usuarios demo reales, registro y manejo de GPS denegado | ✅ completada |
 
 ## Decisiones y notas técnicas
@@ -69,3 +69,4 @@ Leyenda: ⬜ pendiente · 🔄 en curso · ✅ hecha · ⛔ bloqueada
 - **Descomposición Atómica de UI y Vistas**: Todas las vistas se redujeron a ~150-240 líneas apoyándose en `shared/ui/` (`BaseButton`, `BaseField`, `BaseSelect`, `BaseModal`, `StatusBanner`, `AppToast` con `useToast`) y componentes de dominio en `features/{map,report,dispatch,auth}/components/`.
 - **Eliminación Absoluta de `alert()` y `any`**: Se erradicaron todos los `alert()` reemplazándolos con el bus reactivo `AppToast` y modales de confirmación `BaseModal`. Todos los tipos derivan estrictamente de `@geoalert/contracts` y subclases tipadas (`IncidentCircleMarker`, `IncidentMarkerWithSeverity`).
 - **Persistencia Real de Triaje (Bloqueo Optimista)**: La consola de despacho COER interactúa directamente con `PATCH /api/incidents/:id/triage` enviando `expectedVersion`. Ante concurrencia y respuesta `409 STALE_VERSION`, se notifica al operador con un toast de advertencia no destructivo y se refresca el incidente.
+- **Capa y Pronóstico de Riesgo Histórico FEN (T03-4)**: Integración completa con los endpoints `/api/risk/heatmap`, `/api/risk/districts` y `/api/risk/forecast` provistos por A3. Visualización con `leaflet.heat` reactivo al BBox, panel de ranking de vulnerabilidad y simulador de lluvia en `/riesgo` con `RISK_DISCLAIMER` oficial y etiquetas de baja confianza para predicciones extrapoladas.
